@@ -11,6 +11,12 @@ angular.module('chat')
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected');
       });
+      $scope.$on('socket:queueUpdate', () => {
+        socket.emit('checkQueuePlace');
+      });
+      $scope.$on('socket:queuePlace', (ev, place) => {
+        $scope.queue = place;
+      });
     },
   ]
 );

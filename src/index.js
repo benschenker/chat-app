@@ -22,13 +22,13 @@ const state = (() => {
   const getQueueLen = () => queue.length;
   const enQueue = (newVal) => {
     queue = queue.concat(newVal);
-    io.emit('queueUpdate', {
-      queue: getQueueLen(),
-    });
+    io.emit('queueUpdate'); // notify all users that the queue has changed
   };
+  const getQueuePlace = (id) => queue.indexOf(id);
   return {
     getQueueLen,
     enQueue,
+    getQueuePlace,
   };
 })();
 
@@ -40,21 +40,29 @@ io.on('connection', (socket) => {
     state.enQueue(socket.id);
   });
 
-  socket.on('operator-connected', () => {
-    console.log(`an operator connected with socket id:${socket.id}`);
+  /*
+  User can check what place they are in, especially after getting a queueUpdate event
+  */
+  socket.on('checkQueuePlace', () => {
+    const place = state.getQueuePlace(socket.id);
+    socket.emit('queuePlace', place);
   });
+
+  // socket.on('operator-connected', () => {
+  //   console.log(`an operator connected with socket id:${socket.id}`);
+  // });
 
   socket.on('disconnect', () => {
     console.log(`socket disconnected:${socket.id}`);
   });
 
-  socket.on('message-to-operator', (payload) => {
-    console.log(`message-to-operator ${payload.message}`);
-  });
-
-  socket.on('message-to-visitor', (payload) => {
-    console.log(`message-to-visitor ${payload.message}`);
-  });
+  // socket.on('message-to-operator', (payload) => {
+  //   console.log(`message-to-operator ${payload.message}`);
+  // });
+  //
+  // socket.on('message-to-visitor', (payload) => {
+  //   console.log(`message-to-visitor ${payload.message}`);
+  // });
 });
 
 const port = process.env.PORT || 3000;
