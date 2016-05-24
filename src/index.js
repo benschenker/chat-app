@@ -18,17 +18,21 @@ app.get('/operator', (req, res) => {
 });
 
 const state = (() => {
-  let queue = [];
+  const queue = [];
   const getQueueLen = () => queue.length;
-  const enQueue = (newVal) => {
-    queue = queue.concat(newVal);
+  const enQueue = (id) => {
+    queue.push(id);
+  };
+  const deQueue = () => {
     io.emit('queueUpdate'); // notify all users that the queue has changed
+    return queue.shift();
   };
   const getQueuePlace = (id) => queue.indexOf(id);
   return {
     getQueueLen,
     enQueue,
     getQueuePlace,
+    deQueue,
   };
 })();
 
@@ -54,6 +58,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`socket disconnected:${socket.id}`);
+    state.deQueue(socket.id);
   });
 
   // socket.on('message-to-operator', (payload) => {
