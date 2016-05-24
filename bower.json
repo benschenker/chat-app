@@ -1,0 +1,13 @@
+{
+  "name": "olark-fe-hw",
+  "description": "",
+  "main": "lib/index.js",
+  "authors": [
+    "Ben Schenker"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/olark/fe-hw-benschenker",
+  "private": true,
+  "dependencies": {
+  }
+}

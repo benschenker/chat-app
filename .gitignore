@@ -8,3 +8,6 @@ node_modules
 
 # babel generated files
 lib
+
+# bower
+bower_components
