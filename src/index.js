@@ -20,9 +20,16 @@ app.get('/operator', (req, res) => {
 
 const state = (() => {
   let queue = [];
+  let roomId; // visitor who is currently chatting
+  let operator = false; // true when operator is logged in
   const getQueueLen = () => queue.length;
   const enQueue = (id) => {
-    queue.push(id);
+    if (operator && !roomId) {
+      roomId = id;
+    } else {
+      queue.push(id);
+      console.log(`enqueueing: id: ${id} queue: ${queue},`);
+    }
   };
   const deQueue = (id = '') => {
     io.emit('queueUpdate'); // notify all users that the queue has changed
@@ -32,20 +39,27 @@ const state = (() => {
     queue = _.reject(queue, (val) => val === id);
     return id;
   };
-  const getQueuePlace = (id) => queue.indexOf(id);
-  let roomId;
+  const getQueuePlace = (id) => queue.indexOf(id) + 1;
   const match = () => {
+    console.log(`matching: queue: ${queue}, roomId: ${roomId} `);
     const nextUser = deQueue();
     roomId = nextUser;
+    console.log(`matched: queue: ${queue}, roomId: ${roomId} `);
     return roomId;
+  };
+  const getRoomId = () => roomId;
+  const setOperator = (bool) => {
+    operator = bool;
   };
   return {
     getQueueLen,
     enQueue,
     getQueuePlace,
     deQueue,
-    roomId,
+    getRoomId,
     match,
+    operator,
+    setOperator,
   };
 })();
 
@@ -70,6 +84,7 @@ io.on('connection', (socket) => {
 
   socket.on('operator-connected', () => {
     console.log(`an operator connected with socket id:${socket.id}`);
+    state.setOperator(true);
     const roomId = state.match();
     socket.join(roomId);
   });
@@ -81,12 +96,12 @@ io.on('connection', (socket) => {
 
   socket.on('message-to-operator', (payload) => {
     console.log(`message-to-operator ${payload.name}: ${payload.message}`);
-    socket.to(socket.id).emit(payload);
+    socket.to(socket.id).emit('newMessage', payload);
   });
 
   socket.on('message-to-visitor', (payload) => {
-    console.log(`message-to-visitor ${payload.message}`);
-    socket.to(state.roomId).emit(payload);
+    console.log(`message-to-visitor ${state.getRoomId()} ${payload.message}`);
+    socket.to(state.getRoomId()).emit('newMessage', payload);
   });
 });
 
