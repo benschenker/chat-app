@@ -7,5 +7,6 @@ angular.module('chat', [
   socket.forward('connect');
   socket.forward('queueUpdate');
   socket.forward('queuePlace');
+  socket.forward('newMessage');
   return socket;
 });

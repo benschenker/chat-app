@@ -16,8 +16,8 @@ script(src="/scripts/lib/visitor.js")
     .chatbox(ng-show="!queue")
       .history
         div(ng-repeat="chat in history")
-          span.sender {{chat.from}}: 
+          span.sender {{chat.name}}: 
           span.message {{chat.message}}
-      form(ng-submit="submitNewmessage()")
+      form(ng-submit="submitNewMessage()")
         input(ng-model="newMessage")
       

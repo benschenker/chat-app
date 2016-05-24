@@ -10,18 +10,16 @@ angular.module('chat')
       $scope.queue = 100; // large inital value
 
       $scope.history = [];
-      $scope.addMessage = (from, message) => {
-        $scope.history.push({
-          from,
-          message,
-        });
+      $scope.addMessage = (payload) => {
+        $scope.history.push(payload);
       };
-      $scope.submitNewmessage = () => {
-        socket.emit('message-to-operator', {
+      $scope.submitNewMessage = () => {
+        const payload = {
           name: $scope.name,
           message: $scope.newMessage,
-        });
-        $scope.addMessage($scope.name, $scope.newMessage);
+        };
+        socket.emit('message-to-operator', payload);
+        $scope.addMessage(payload);
         $scope.newMessage = '';
       };
 
@@ -33,6 +31,9 @@ angular.module('chat')
       });
       $scope.$on('socket:queuePlace', (ev, place) => {
         $scope.queue = place;
+      });
+      $scope.$on('socket:newMessage', (ev, payload) => {
+        $scope.addMessage(payload);
       });
     },
   ]
