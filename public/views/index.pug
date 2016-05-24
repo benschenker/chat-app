@@ -1,15 +1,18 @@
 script(src="/socket.io/socket.io.js")
+script(src="/bower_components/angular/angular.js")
 script(src="/scripts/lib/app.js")
-.main
+script(src="/scripts/lib/visitor.js")
+
+.main(ng-app="chat" ng-controller="visitorCtrl")
   .namefield
     label What is your name?
       input(type="text").name
   .chat
-    .queue
+    .queue(ng-show="queue")
       span You are number 
-      span.number 4 
+      span.number {{queue}} 
       span in the queue!
-    .chatbox
+    .chatbox(ng-show="!queue")
       .history
         textarea
       input.newmessage

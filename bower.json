@@ -9,5 +9,6 @@
   "homepage": "https://github.com/olark/fe-hw-benschenker",
   "private": true,
   "dependencies": {
+    "angular": "^1.5.5"
   }
 }
