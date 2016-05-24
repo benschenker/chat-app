@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);// eslint-disable-line new-cap
 const io = require('socket.io')(server);
+const _ = require('lodash');
 
 const publicPath = '../public';
 app.use(express.static(publicPath));
@@ -18,21 +19,33 @@ app.get('/operator', (req, res) => {
 });
 
 const state = (() => {
-  const queue = [];
+  let queue = [];
   const getQueueLen = () => queue.length;
   const enQueue = (id) => {
     queue.push(id);
   };
-  const deQueue = () => {
+  const deQueue = (id = '') => {
     io.emit('queueUpdate'); // notify all users that the queue has changed
-    return queue.shift();
+    if (!id) {
+      return queue.shift();
+    }
+    queue = _.reject(queue, (val) => val === id);
+    return id;
   };
   const getQueuePlace = (id) => queue.indexOf(id);
+  let roomId;
+  const match = () => {
+    const nextUser = deQueue();
+    roomId = nextUser;
+    return roomId;
+  };
   return {
     getQueueLen,
     enQueue,
     getQueuePlace,
     deQueue,
+    roomId,
+    match,
   };
 })();
 
@@ -57,6 +70,8 @@ io.on('connection', (socket) => {
 
   socket.on('operator-connected', () => {
     console.log(`an operator connected with socket id:${socket.id}`);
+    const roomId = state.match();
+    socket.join(roomId);
   });
 
   socket.on('disconnect', () => {
@@ -66,11 +81,13 @@ io.on('connection', (socket) => {
 
   socket.on('message-to-operator', (payload) => {
     console.log(`message-to-operator ${payload.name}: ${payload.message}`);
+    socket.to(socket.id).emit(payload);
   });
-  //
-  // socket.on('message-to-visitor', (payload) => {
-  //   console.log(`message-to-visitor ${payload.message}`);
-  // });
+
+  socket.on('message-to-visitor', (payload) => {
+    console.log(`message-to-visitor ${payload.message}`);
+    socket.to(state.roomId).emit(payload);
+  });
 });
 
 const port = process.env.PORT || 3000;
