@@ -17,10 +17,13 @@ angular.module('chat')
         });
       };
       $scope.submitNewmessage = () => {
+        socket.emit('message-to-operator', {
+          name: $scope.name,
+          message: $scope.newMessage,
+        });
         $scope.addMessage($scope.name, $scope.newMessage);
         $scope.newMessage = '';
       };
-      $scope.addMessage('Ben', 'Hello World');
 
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected');

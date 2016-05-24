@@ -64,9 +64,9 @@ io.on('connection', (socket) => {
     state.deQueue(socket.id);
   });
 
-  // socket.on('message-to-operator', (payload) => {
-  //   console.log(`message-to-operator ${payload.message}`);
-  // });
+  socket.on('message-to-operator', (payload) => {
+    console.log(`message-to-operator ${payload.name}: ${payload.message}`);
+  });
   //
   // socket.on('message-to-visitor', (payload) => {
   //   console.log(`message-to-visitor ${payload.message}`);
