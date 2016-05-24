@@ -1,2 +1,16 @@
 script(src="/socket.io/socket.io.js")
 script(src="/scripts/lib/app.js")
+.main
+  .namefield
+    label What is your name?
+      input(type="text").name
+  .chat
+    .queue
+      span You are number 
+      span.number 4 
+      span in the queue!
+    .chatbox
+      .history
+        textarea
+      input.newmessage
+      
