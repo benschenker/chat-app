@@ -16,6 +16,10 @@ angular.module('chat')
           message,
         });
       };
+      $scope.submitNewmessage = () => {
+        $scope.addMessage($scope.name, $scope.newMessage);
+        $scope.newMessage = '';
+      };
       $scope.addMessage('Ben', 'Hello World');
 
       $scope.$on('socket:connect', () => {
