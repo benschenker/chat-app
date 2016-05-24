@@ -36,8 +36,17 @@ io.on('connection', (socket) => {
       newState.visitorChatting = newState.queue.shift();
       io.emit('queueUpdate'); // notify all users that the queue has changed
       // socket.join(newState.visitorChatting);
+    } else {
+      newState.visitorChatting = undefined;
     }
     return newState;
+  }
+  function logState() {
+    console.log(`
+      queue: ${state.queue},
+      visitorChatting: ${state.visitorChatting},
+      operator: ${state.operator}
+    `);
   }
 
   socket.on('visitor-connected', () => {
@@ -51,6 +60,7 @@ io.on('connection', (socket) => {
     }
     state = newState;
     sendQueuePlace();
+    logState();
   });
 
   /*
@@ -64,6 +74,7 @@ io.on('connection', (socket) => {
     newState.operator = socket.id;
     newState = addNextChatterToChat(newState);
     state = newState;
+    logState();
   });
 
   socket.on('disconnect', () => {
@@ -79,6 +90,7 @@ io.on('connection', (socket) => {
       newState.queue = _.reject(newState.queue, (val) => val === socket.id);
     }
     state = newState;
+    logState();
   });
 
   socket.on('message-to-operator', (payload) => {
