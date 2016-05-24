@@ -39,18 +39,21 @@ const state = (() => {
 io.on('connection', (socket) => {
   console.log('a user connected');
 
+  function sendQueuePlace() {
+    const place = state.getQueuePlace(socket.id);
+    socket.emit('queuePlace', place);
+  }
+
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
     state.enQueue(socket.id);
+    sendQueuePlace();
   });
 
   /*
   User can check what place they are in, especially after getting a queueUpdate event
   */
-  socket.on('checkQueuePlace', () => {
-    const place = state.getQueuePlace(socket.id);
-    socket.emit('queuePlace', place);
-  });
+  socket.on('checkQueuePlace', sendQueuePlace);
 
   // socket.on('operator-connected', () => {
   //   console.log(`an operator connected with socket id:${socket.id}`);

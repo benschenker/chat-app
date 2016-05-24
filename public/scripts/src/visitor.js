@@ -10,7 +10,6 @@ angular.module('chat')
       $scope.queue = 4;
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected');
-        socket.emit('checkQueuePlace');
       });
       $scope.$on('socket:queueUpdate', () => {
         socket.emit('checkQueuePlace');
