@@ -18,62 +18,38 @@ app.get('/operator', (req, res) => {
   res.render('operator');
 });
 
-const state = (() => {
-  let queue = [];
-  let roomId; // visitor who is currently chatting
-  let operator = false; // true when operator is logged in
-  const getQueueLen = () => queue.length;
-  const enQueue = (id) => {
-    if (operator && !roomId) {
-      roomId = id;
-    } else {
-      queue.push(id);
-      console.log(`enqueueing: id: ${id} queue: ${queue},`);
-    }
-  };
-  const deQueue = (id = '') => {
-    io.emit('queueUpdate'); // notify all users that the queue has changed
-    if (!id) {
-      return queue.shift();
-    }
-    queue = _.reject(queue, (val) => val === id);
-    return id;
-  };
-  const getQueuePlace = (id) => queue.indexOf(id) + 1;
-  const match = () => {
-    console.log(`matching: queue: ${queue}, roomId: ${roomId} `);
-    const nextUser = deQueue();
-    roomId = nextUser;
-    console.log(`matched: queue: ${queue}, roomId: ${roomId} `);
-    return roomId;
-  };
-  const getRoomId = () => roomId;
-  const setOperator = (bool) => {
-    operator = bool;
-  };
-  return {
-    getQueueLen,
-    enQueue,
-    getQueuePlace,
-    deQueue,
-    getRoomId,
-    match,
-    operator,
-    setOperator,
-  };
-})();
-
+let state = {
+  queue: [],
+  visitorChatting: undefined,
+  operator: undefined,
+};
 io.on('connection', (socket) => {
   console.log('a user connected');
 
   function sendQueuePlace() {
-    const place = state.getQueuePlace(socket.id);
+    const place = state.queue.indexOf(socket.id) + 1;
     socket.emit('queuePlace', place);
+  }
+  function addNextChatterToChat(currentState) {
+    const newState = _.cloneDeep(currentState);
+    if (newState.queue.length) {
+      newState.visitorChatting = newState.queue.shift();
+      io.emit('queueUpdate'); // notify all users that the queue has changed
+      // socket.join(newState.visitorChatting);
+    }
+    return newState;
   }
 
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
-    state.enQueue(socket.id);
+    const newState = _.cloneDeep(state);
+    if (newState.operator && !newState.visitorChatting) {
+      newState.visitorChatting = socket.id;
+      // connect him to operator!
+    } else {
+      newState.queue.push(socket.id);
+    }
+    state = newState;
     sendQueuePlace();
   });
 
@@ -84,24 +60,35 @@ io.on('connection', (socket) => {
 
   socket.on('operator-connected', () => {
     console.log(`an operator connected with socket id:${socket.id}`);
-    state.setOperator(true);
-    const roomId = state.match();
-    socket.join(roomId);
+    let newState = _.cloneDeep(state);
+    newState.operator = socket.id;
+    newState = addNextChatterToChat(newState);
+    state = newState;
   });
 
   socket.on('disconnect', () => {
     console.log(`socket disconnected:${socket.id}`);
-    state.deQueue(socket.id);
+    // state.deQueue(socket.id);
+    let newState = _.cloneDeep(state);
+    if (socket.id === newState.operator) {
+      newState.operator = undefined;
+      // what happens if he is chatting?
+    } else if (socket.id === newState.visitorChatting) {
+      newState = addNextChatterToChat(newState);
+    } else if (newState.queue.indexOf(socket.id) !== -1) {
+      newState.queue = _.reject(newState.queue, (val) => val === socket.id);
+    }
+    state = newState;
   });
 
   socket.on('message-to-operator', (payload) => {
     console.log(`message-to-operator ${payload.name}: ${payload.message}`);
-    socket.to(socket.id).emit('newMessage', payload);
+    socket.to(state.operator).emit('newMessage', payload);
   });
 
   socket.on('message-to-visitor', (payload) => {
-    console.log(`message-to-visitor ${state.getRoomId()} ${payload.message}`);
-    socket.to(state.getRoomId()).emit('newMessage', payload);
+    console.log(`message-to-visitor ${state.visitorChatting} ${payload.message}`);
+    socket.to(state.visitorChatting).emit('newMessage', payload);
   });
 });
 
