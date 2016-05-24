@@ -7,7 +7,17 @@ angular.module('chat')
     '$scope',
     'socket',
     ($scope, socket) => {
-      $scope.queue = 4;
+      $scope.queue = 100; // large inital value
+
+      $scope.history = [];
+      $scope.addMessage = (from, message) => {
+        $scope.history.push({
+          from,
+          message,
+        });
+      };
+      $scope.addMessage('Ben', 'Hello World');
+
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected');
       });
