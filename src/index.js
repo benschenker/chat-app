@@ -17,11 +17,27 @@ app.get('/operator', (req, res) => {
   res.render('operator');
 });
 
+const state = (() => {
+  let queue = [];
+  const getQueueLen = () => queue.length;
+  const enQueue = (newVal) => {
+    queue = queue.concat(newVal);
+    io.emit('queueUpdate', {
+      queue: getQueueLen(),
+    });
+  };
+  return {
+    getQueueLen,
+    enQueue,
+  };
+})();
+
 io.on('connection', (socket) => {
   console.log('a user connected');
 
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
+    state.enQueue(socket.id);
   });
 
   socket.on('operator-connected', () => {
