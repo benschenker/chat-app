@@ -55,9 +55,9 @@ io.on('connection', (socket) => {
   */
   socket.on('checkQueuePlace', sendQueuePlace);
 
-  // socket.on('operator-connected', () => {
-  //   console.log(`an operator connected with socket id:${socket.id}`);
-  // });
+  socket.on('operator-connected', () => {
+    console.log(`an operator connected with socket id:${socket.id}`);
+  });
 
   socket.on('disconnect', () => {
     console.log(`socket disconnected:${socket.id}`);
