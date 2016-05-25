@@ -7,6 +7,7 @@ angular.module('chat')
     '$scope',
     'socket',
     ($scope, socket) => {
+      $scope.name = 'Operator';
       $scope.chatting = false;
       $scope.history = [];
       $scope.addMessage = (payload) => {
