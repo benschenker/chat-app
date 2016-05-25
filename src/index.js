@@ -88,7 +88,8 @@ io.on('connection', (socket) => {
     let newState = _.cloneDeep(state);
     if (socket.id === newState.operator) {
       newState.operator = undefined;
-      // what happens if he is chatting?
+      // what happens if he is chatting and disconnects?
+      io.to(newState.visitorChatting).emit('chatEnd'); // as if operator did !next
     } else if (socket.id === newState.visitorChatting) {
       io.to(newState.operator).emit('chatEnd');
       newState = addNextChatterToChat(newState);
