@@ -10,9 +10,6 @@ angular.module('chat')
       $scope.queue = 100; // large inital value
 
       $scope.history = [];
-      $scope.addMessage = (payload) => {
-        $scope.history.push(payload);
-      };
       $scope.submitNewMessage = () => {
         const payload = {
           name: $scope.name,
@@ -44,8 +41,3 @@ angular.module('chat')
     },
   ]
 );
-
-
-// function sendMessageToOperator(message) {
-//   socket.emit('message-to-operator', { message });
-// }

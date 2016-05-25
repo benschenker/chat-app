@@ -10,14 +10,7 @@ angular.module('chat')
       $scope.name = 'Operator';
       $scope.chatting = false;
       $scope.history = [];
-      $scope.addMessage = (payload) => {
-        $scope.history.push(payload);
-        /* To keep scrolled at newest messages
-        See: http://stackoverflow.com/a/18614545
-        */
-        const historyEl = document.getElementById('history');
-        historyEl.scrollTop = historyEl.scrollHeight;
-      };
+
       $scope.submitNewMessage = () => {
         const payload = {
           name: $scope.name,
@@ -52,7 +45,3 @@ angular.module('chat')
     },
   ]
 );
-
-// function sendMessageToVisitor(message) {
-//   socket.emit('message-to-visitor', { message });
-// }
