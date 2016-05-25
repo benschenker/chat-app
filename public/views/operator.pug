@@ -11,11 +11,11 @@ link(rel="stylesheet" href="/stylesheets/operator.css")
       input(type="text" ng-model="name").name
   .chat
     span Queue
-    .queue
+    .queue.list
       div(ng-repeat="user in queue") {{user}}
     .chatbox(ng-show="chatting")
       span History
-      #history
+      #history.list
         div(ng-repeat="chat in history")
           span.sender {{chat.name}}: 
           span.message {{chat.message}}

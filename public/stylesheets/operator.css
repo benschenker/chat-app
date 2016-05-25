@@ -1,22 +1,16 @@
-.chat, .nameField {
-  
-}
-.queue {
+.list {
   border-style: solid;
   border-width: thin;
   max-width: 400px;
-  height: 150px;
   overflow: scroll;
   margin: 0 0 10px 10px;
+}
+.queue {
+  height: 150px;
 }
 
 #history {
   height: 250px;
-  max-width: 400px;
-  overflow: scroll;
-  border-style: solid;
-  border-width: thin;
-  margin: 0 0 10px 10px;
 }
 
 input {
