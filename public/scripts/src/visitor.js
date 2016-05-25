@@ -26,6 +26,9 @@ angular.module('chat')
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected');
       });
+      $scope.$on('socket:default-name', (ev, defaultName) => {
+        $scope.name = defaultName;
+      });
       $scope.$on('socket:queueUpdate', () => {
         socket.emit('checkQueuePlace');
       });

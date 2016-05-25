@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
     let newState = _.cloneDeep(state);
+    socket.emit('default-name', 'visitor');
     newState.queue.push(socket.id);
     if (!newState.visitorChatting) {
       newState = addNextChatterToChat(newState);

@@ -10,5 +10,6 @@ angular.module('chat', [
   socket.forward('newMessage');
   socket.forward('chatStart');
   socket.forward('chatEnd');
+  socket.forward('default-name');
   return socket;
 });
