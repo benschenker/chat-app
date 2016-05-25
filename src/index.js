@@ -18,6 +18,14 @@ app.get('/operator', (req, res) => {
   res.render('operator');
 });
 
+/* allows pug to render html for any views requested
+for example: to render the operator view/html
+navigate to '/views/operator'
+*/
+app.get('/views/:file', (req, res) => {
+  res.render(req.params.file);
+});
+
 let state = {
   queue: [],
   visitorChatting: undefined,
