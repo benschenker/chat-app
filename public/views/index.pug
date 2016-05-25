@@ -3,21 +3,25 @@ script(src="/bower_components/angular/angular.js")
 script(src="/bower_components/angular-socket-io/socket.js")
 script(src="/scripts/lib/app.js")
 script(src="/scripts/lib/visitor.js")
+link(rel="stylesheet" href="/stylesheets/app.css")
+
 
 .main(ng-app="chat" ng-controller="visitorCtrl")
   .namefield
     label What is your name?
       input(type="text" ng-model="name").name
   .chat(ng-show="!chatEnd")
-    .queue(ng-show="queue")
+    #queue(ng-show="queue")
       span You are number 
       span.number {{queue}} 
       span in the queue!
     .chatbox(ng-show="!queue")
-      .history
+      span History
+      #history.list
         div(ng-repeat="chat in history")
           span.sender {{chat.name}}: 
           span.message {{chat.message}}
       form(ng-submit="submitNewMessage()")
         input(ng-model="newMessage")
+        button(type="submit") Enter
   .end-chat(ng-show="chatEnd") Thanks {{name}}, your chat is now over, GoodBye!
