@@ -104,6 +104,7 @@ io.on('connection', (socket) => {
     } else if (newState.queue.indexOf(socket.id) !== -1) {
       newState.queue = _.reject(newState.queue, (val) => val === socket.id);
       queueUpdateOperator(newState);
+      io.emit('queueUpdate'); // notify all users that the queue has changed
     }
     state = newState;
     logState();
