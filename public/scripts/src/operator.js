@@ -17,7 +17,11 @@ angular.module('chat')
           name: $scope.name,
           message: $scope.newMessage,
         };
-        socket.emit('message-to-visitor', payload);
+        if (payload.message === '!next') {
+          socket.emit('closeThisChat');
+        } else {
+          socket.emit('message-to-visitor', payload);
+        }
         $scope.addMessage(payload);
         $scope.newMessage = '';
       };

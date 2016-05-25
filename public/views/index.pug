@@ -8,7 +8,7 @@ script(src="/scripts/lib/visitor.js")
   .namefield
     label What is your name?
       input(type="text" ng-model="name").name
-  .chat
+  .chat(ng-show="!chatEnd")
     .queue(ng-show="queue")
       span You are number 
       span.number {{queue}} 
@@ -20,4 +20,4 @@ script(src="/scripts/lib/visitor.js")
           span.message {{chat.message}}
       form(ng-submit="submitNewMessage()")
         input(ng-model="newMessage")
-      
+  .end-chat(ng-show="chatEnd") Thanks {{name}}, your chat is now over, GoodBye!

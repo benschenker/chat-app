@@ -109,6 +109,14 @@ io.on('connection', (socket) => {
     console.log(`message-to-visitor ${state.visitorChatting} ${payload.message}`);
     socket.to(state.visitorChatting).emit('newMessage', payload);
   });
+  socket.on('closeThisChat', () => {
+    console.log(`close chat with ${state.visitorChatting}`);
+    let newState = _.cloneDeep(state);
+    io.to(newState.operator).emit('chatEnd');
+    io.to(newState.visitorChatting).emit('chatEnd');
+    newState = addNextChatterToChat(newState);
+    state = newState;
+  });
 });
 
 const port = process.env.PORT || 3000;
