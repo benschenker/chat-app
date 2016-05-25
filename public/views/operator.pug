@@ -4,7 +4,7 @@ script(src="/bower_components/angular-socket-io/socket.js")
 script(src="/scripts/lib/app.js")
 script(src="/scripts/lib/operator.js")
 script(src="/scripts/lib/directives/qcName.js")
-
+script(src="/scripts/lib/directives/qcChatbox.js")
 link(rel="stylesheet" href="/stylesheets/app.css")
 
 .main(ng-app="chat" ng-controller="operatorCtrl")
@@ -13,13 +13,4 @@ link(rel="stylesheet" href="/stylesheets/app.css")
     span Queue
     .queue.list
       div(ng-repeat="user in queue") {{user}}
-    .chatbox(ng-show="chatting")
-      span History
-      #history.list
-        div(ng-repeat="chat in history")
-          span.sender {{chat.name}}: 
-          span.message {{chat.message}}
-      form(ng-submit="submitNewMessage()")
-        input(ng-model="newMessage")
-        button(type="submit") Enter
-      
+    qc-chatbox(ng-show="chatting")

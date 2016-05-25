@@ -1,0 +1,9 @@
+.chatbox
+  span History
+  #history.list
+    div(ng-repeat="chat in history")
+      span.sender {{chat.name}}: 
+      span.message {{chat.message}}
+  form(ng-submit="submitNewMessage()")
+    input(ng-model="newMessage")
+    button(type="submit") Enter
