@@ -7,6 +7,7 @@ angular.module('chat')
     '$scope',
     'socket',
     ($scope, socket) => {
+      $scope.chatting = false;
       $scope.history = [];
       $scope.addMessage = (payload) => {
         $scope.history.push(payload);
@@ -26,9 +27,11 @@ angular.module('chat')
       });
       $scope.$on('socket:chatStart', () => {
         $scope.history = [];
+        $scope.chatting = true;
       });
       $scope.$on('socket:chatEnd', () => {
         $scope.history = [];
+        $scope.chatting = false;
       });
       $scope.$on('socket:newMessage', (ev, payload) => {
         $scope.addMessage(payload);
