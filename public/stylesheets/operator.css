@@ -16,3 +16,7 @@
 input {
   margin-left: 10px;
 }
+
+#history span.sender {
+  font-weight: bold;
+}
