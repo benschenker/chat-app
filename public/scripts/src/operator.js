@@ -36,6 +36,9 @@ angular.module('chat')
       $scope.$on('socket:newMessage', (ev, payload) => {
         $scope.addMessage(payload);
       });
+      $scope.$on('socket:queueUpdateOperator', (ev, queue) => {
+        $scope.queue = queue;
+      });
     },
   ]
 );

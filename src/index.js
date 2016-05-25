@@ -30,6 +30,9 @@ io.on('connection', (socket) => {
     const place = state.queue.indexOf(socket.id) + 1;
     socket.emit('queuePlace', place);
   }
+  function queueUpdateOperator(currentState) {
+    io.to(currentState.operator).emit('queueUpdateOperator', currentState.queue);
+  }
   function addNextChatterToChat(currentState) {
     const newState = _.cloneDeep(currentState);
     if (newState.queue.length && newState.operator) {
@@ -40,6 +43,7 @@ io.on('connection', (socket) => {
     } else {
       newState.visitorChatting = undefined;
     }
+    queueUpdateOperator(newState);
     return newState;
   }
   function logState() {
@@ -50,6 +54,7 @@ io.on('connection', (socket) => {
     `);
   }
 
+
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
     let newState = _.cloneDeep(state);
@@ -59,6 +64,7 @@ io.on('connection', (socket) => {
       newState = addNextChatterToChat(newState);
     }
     state = newState;
+    queueUpdateOperator(state);
     sendQueuePlace();
     logState();
   });
@@ -88,6 +94,7 @@ io.on('connection', (socket) => {
       newState = addNextChatterToChat(newState);
     } else if (newState.queue.indexOf(socket.id) !== -1) {
       newState.queue = _.reject(newState.queue, (val) => val === socket.id);
+      queueUpdateOperator(newState);
     }
     state = newState;
     logState();

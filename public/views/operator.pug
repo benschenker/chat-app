@@ -9,6 +9,8 @@ script(src="/scripts/lib/operator.js")
     label What is your name?
       input(type="text" ng-model="name").name
   .chat
+    .queue
+      div(ng-repeat="user in queue") {{user}}
     .chatbox(ng-show="chatting")
       .history
         div(ng-repeat="chat in history")
