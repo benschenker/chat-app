@@ -3,13 +3,12 @@ script(src="/bower_components/angular/angular.js")
 script(src="/bower_components/angular-socket-io/socket.js")
 script(src="/scripts/lib/app.js")
 script(src="/scripts/lib/visitor.js")
+script(src="/scripts/lib/directives/qcName.js")
 link(rel="stylesheet" href="/stylesheets/app.css")
 
 
 .main(ng-app="chat" ng-controller="visitorCtrl")
-  .namefield
-    label What is your name?
-      input(type="text" ng-model="name").name
+  qc-name
   .chat(ng-show="!chatEnd")
     #queue(ng-show="queue")
       span You are number 
