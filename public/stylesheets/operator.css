@@ -1,0 +1,15 @@
+.chat, .nameField {
+  display: flex;
+  justify-content: space-around;
+}
+.queue {
+  border-style: solid;
+  border-width: thin;
+}
+
+.history {
+  max-height: 250px;
+  overflow: scroll;
+  border-style: solid;
+  border-width: thin;
+}
