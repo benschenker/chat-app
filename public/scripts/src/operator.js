@@ -24,7 +24,12 @@ angular.module('chat')
       $scope.$on('socket:connect', () => {
         socket.emit('operator-connected');
       });
-
+      $scope.$on('socket:chatStart', () => {
+        $scope.history = [];
+      });
+      $scope.$on('socket:chatEnd', () => {
+        $scope.history = [];
+      });
       $scope.$on('socket:newMessage', (ev, payload) => {
         $scope.addMessage(payload);
       });

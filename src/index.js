@@ -32,10 +32,11 @@ io.on('connection', (socket) => {
   }
   function addNextChatterToChat(currentState) {
     const newState = _.cloneDeep(currentState);
-    if (newState.queue.length) {
+    if (newState.queue.length && newState.operator) {
       newState.visitorChatting = newState.queue.shift();
       io.emit('queueUpdate'); // notify all users that the queue has changed
-      // socket.join(newState.visitorChatting);
+      io.to(newState.operator).emit('chatStart');
+      io.to(newState.visitorChatting).emit('chatStart');
     } else {
       newState.visitorChatting = undefined;
     }
@@ -51,12 +52,10 @@ io.on('connection', (socket) => {
 
   socket.on('visitor-connected', () => {
     console.log(`a visitor connected with socket id:${socket.id}`);
-    const newState = _.cloneDeep(state);
-    if (newState.operator && !newState.visitorChatting) {
-      newState.visitorChatting = socket.id;
-      // connect him to operator!
-    } else {
-      newState.queue.push(socket.id);
+    let newState = _.cloneDeep(state);
+    newState.queue.push(socket.id);
+    if (!newState.visitorChatting) {
+      newState = addNextChatterToChat(newState);
     }
     state = newState;
     sendQueuePlace();
@@ -79,12 +78,12 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`socket disconnected:${socket.id}`);
-    // state.deQueue(socket.id);
     let newState = _.cloneDeep(state);
     if (socket.id === newState.operator) {
       newState.operator = undefined;
       // what happens if he is chatting?
     } else if (socket.id === newState.visitorChatting) {
+      io.to(newState.operator).emit('chatEnd');
       newState = addNextChatterToChat(newState);
     } else if (newState.queue.indexOf(socket.id) !== -1) {
       newState.queue = _.reject(newState.queue, (val) => val === socket.id);
