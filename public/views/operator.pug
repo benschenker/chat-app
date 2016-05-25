@@ -13,7 +13,7 @@ link(rel="stylesheet" href="/stylesheets/operator.css")
     .queue Queue
       div(ng-repeat="user in queue") {{user}}
     .chatbox(ng-show="chatting")
-      .history
+      #history
         div(ng-repeat="chat in history")
           span.sender {{chat.name}}: 
           span.message {{chat.message}}
