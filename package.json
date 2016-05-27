@@ -29,7 +29,8 @@
     "build-node": "babel src -d lib -w",
     "build-front": "babel public/scripts/src -d public/scripts/lib -w",
     "unit-test-front": "karma start test/karma-conf.js",
-    "unit-test-back": "mocha --compilers js:babel-register"
+    "unit-test-back": "mocha --compilers js:babel-register",
+    "start": "node lib/index.js"
   },
   "engines": {
     "node": "5.2.0",

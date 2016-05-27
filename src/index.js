@@ -6,7 +6,7 @@ const io = require('socket.io')(server);
 const _ = require('lodash');
 const helpers = require('./helpers.js').init(io);
 
-const publicPath = '../public';
+const publicPath = 'public';
 app.use(express.static(publicPath)); // serves static files from public dir
 
 // uses pug (formerly known as jade) to render the views
