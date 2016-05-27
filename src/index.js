@@ -105,7 +105,7 @@ io.on('connection', (socket) => {
     } else if (socket.id === newState.visitorChatting.id) {
       io.to(newState.operator).emit('chatEnd');
       newState = addNextChatterToChat(newState);
-    } else if (_.find(state.queue, isVisitor(socket.id))) {
+    } else if (_.find(newState.queue, isVisitor(socket.id))) {
       newState.queue = _.reject(newState.queue, isVisitor(socket.id));
       queueUpdateOperator(newState);
       io.emit('queueUpdate'); // notify all users that the queue has changed
@@ -129,6 +129,18 @@ io.on('connection', (socket) => {
     io.to(newState.operator).emit('chatEnd');
     io.to(newState.visitorChatting.id).emit('chatEnd');
     newState = addNextChatterToChat(newState);
+    state = newState;
+  });
+  socket.on('visitor-change-name', (name) => {
+    const newState = _.cloneDeep(state);
+    if (socket.id === newState.visitorChatting.id) {
+      newState.visitorChatting.name = name;
+      // Send operator updated name of chatter
+    } else if (_.find(newState.queue, isVisitor(socket.id))) {
+      const visitorIndex = _.findIndex(state.queue, isVisitor(socket.id));
+      newState.queue[visitorIndex].name = name;
+      queueUpdateOperator(newState);
+    }
     state = newState;
   });
 });

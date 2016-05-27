@@ -19,7 +19,9 @@ angular.module('chat')
         $scope.addMessage(payload);
         $scope.newMessage = '';
       };
-
+      $scope.$watch('name', (newValue) => {
+        socket.emit('visitor-change-name', newValue);
+      });
       $scope.$on('socket:connect', () => {
         socket.emit('visitor-connected', 'visitor');
       });
