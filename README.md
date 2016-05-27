@@ -2,13 +2,13 @@
 
 ## Developer Setup
 
-* `npm install`
+1. `npm install`
 * `bower install`
 * `npm run build`
 
 ## Running the App
 
-`npm start`
+* `npm start`
 
 ## Tests
 
