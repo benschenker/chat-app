@@ -13,7 +13,7 @@ app.set('views', `${publicPath}/views`);
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('visitor');
 });
 
 app.get('/operator', (req, res) => {

@@ -10,6 +10,7 @@ angular.module('chat')
       $scope.name = 'Operator';
       $scope.chattingWith = {};
       $scope.history = [];
+      // $scope.addMessage is a function that comes from the qc-chatbox directive
 
       $scope.submitNewMessage = () => {
         const payload = {

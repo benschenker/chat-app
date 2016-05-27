@@ -10,6 +10,8 @@ angular.module('chat')
       $scope.queue = 100; // large inital value
       $scope.name = 'visitor';
       $scope.history = [];
+      // $scope.addMessage is a function that comes from the qc-chatbox directive
+
       $scope.submitNewMessage = () => {
         const payload = {
           name: $scope.name,
@@ -19,14 +21,15 @@ angular.module('chat')
         $scope.addMessage(payload);
         $scope.newMessage = '';
       };
+
       $scope.$watch('name', (newValue) => {
         socket.emit('visitor-change-name', newValue);
       });
       $scope.$on('socket:connect', () => {
-        socket.emit('visitor-connected', 'visitor');
+        socket.emit('visitor-connected', $scope.name);
       });
       $scope.$on('socket:queueUpdate', () => {
-        socket.emit('checkQueuePlace');
+        socket.emit('checkQueuePlace'); // when the queue updates, ask for a new place number
       });
       $scope.$on('socket:queuePlace', (ev, place) => {
         $scope.queue = place;
