@@ -25,10 +25,11 @@
     "mocha": "^2.4.5"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha --compilers js:babel-register",
+    "test": "npm run unit-test-front && npm run unit-test-back",
     "build-node": "babel src -d lib -w",
     "build-front": "babel public/scripts/src -d public/scripts/lib -w",
-    "unit-test-front": "karma start test/karma-conf.js"
+    "unit-test-front": "karma start test/karma-conf.js",
+    "unit-test-back": "mocha --compilers js:babel-register"
   },
   "engines": {
     "node": "5.2.0",
