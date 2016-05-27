@@ -26,11 +26,13 @@
   },
   "scripts": {
     "test": "npm run unit-test-front && npm run unit-test-back",
+    "build": "babel src -d lib && babel public/scripts/src -d public/scripts/lib",
     "build-back": "babel src -d lib -w",
     "build-front": "babel public/scripts/src -d public/scripts/lib -w",
     "unit-test-front": "karma start test/karma-conf.js",
     "unit-test-back": "mocha --compilers js:babel-register",
-    "start": "node lib/index.js"
+    "start": "node lib/index.js",
+    "clean": "rm -r lib public/scripts/lib"
   },
   "engines": {
     "node": "5.2.0",

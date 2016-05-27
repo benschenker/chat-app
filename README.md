@@ -1,14 +1,14 @@
 # Frontend Engineer Homework
 
-## Running the App
-`npm start`
-
 ## Developer Setup
 
 * `npm install`
 * `bower install`
-* `npm run build-front` - uses a watch
-* `npm run build-back` - uses a watch
+* `npm run build`
+
+## Running the App
+
+`npm start`
 
 ## Tests
 
