@@ -12,5 +12,6 @@ angular.module('chat', [
   socket.forward('chatEnd');
   socket.forward('default-name');
   socket.forward('queueUpdateOperator');
+  socket.forward('chatter-name-change');
   return socket;
 });

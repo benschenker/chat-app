@@ -8,7 +8,7 @@ angular.module('chat')
     'socket',
     ($scope, socket) => {
       $scope.name = 'Operator';
-      $scope.chatting = false;
+      $scope.chattingWith = {};
       $scope.history = [];
 
       $scope.submitNewMessage = () => {
@@ -28,13 +28,16 @@ angular.module('chat')
       $scope.$on('socket:connect', () => {
         socket.emit('operator-connected');
       });
-      $scope.$on('socket:chatStart', () => {
+      $scope.$on('socket:chatStart', (ev, chatter) => {
         $scope.history = [];
-        $scope.chatting = true;
+        $scope.chattingWith = chatter;
       });
       $scope.$on('socket:chatEnd', () => {
         $scope.history = [];
-        $scope.chatting = false;
+        $scope.chattingWith = {};
+      });
+      $scope.$on('socket:chatter-name-change', (ev, chatter) => {
+        $scope.chattingWith = chatter;
       });
       $scope.$on('socket:newMessage', (ev, payload) => {
         $scope.addMessage(payload);
