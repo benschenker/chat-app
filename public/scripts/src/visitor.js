@@ -8,7 +8,7 @@ angular.module('chat')
     'socket',
     ($scope, socket) => {
       $scope.queue = 100; // large inital value
-
+      $scope.name = 'visitor';
       $scope.history = [];
       $scope.submitNewMessage = () => {
         const payload = {
@@ -21,10 +21,7 @@ angular.module('chat')
       };
 
       $scope.$on('socket:connect', () => {
-        socket.emit('visitor-connected');
-      });
-      $scope.$on('socket:default-name', (ev, defaultName) => {
-        $scope.name = defaultName;
+        socket.emit('visitor-connected', 'visitor');
       });
       $scope.$on('socket:queueUpdate', () => {
         socket.emit('checkQueuePlace');

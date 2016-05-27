@@ -27,15 +27,17 @@ app.get('/views/:file', (req, res) => {
 });
 
 let state = {
-  queue: [],
-  visitorChatting: undefined,
-  operator: undefined,
+  queue: [], // array of visitor objects
+  visitorChatting: {}, // a visitor object consisting of a name and an id
+  operator: undefined, // the socket id of the logged in operator
 };
 io.on('connection', (socket) => {
   console.log('a user connected');
-
+  function isVisitor(id) {
+    return (visitorObj) => visitorObj.id === id;
+  }
   function sendQueuePlace() {
-    const place = state.queue.indexOf(socket.id) + 1;
+    const place = _.findIndex(state.queue, isVisitor(socket.id)) + 1;
     socket.emit('queuePlace', place);
   }
   function queueUpdateOperator(currentState) {
@@ -47,28 +49,30 @@ io.on('connection', (socket) => {
       newState.visitorChatting = newState.queue.shift();
       io.emit('queueUpdate'); // notify all users that the queue has changed
       io.to(newState.operator).emit('chatStart');
-      io.to(newState.visitorChatting).emit('chatStart');
+      io.to(newState.visitorChatting.id).emit('chatStart');
     } else {
-      newState.visitorChatting = undefined;
+      newState.visitorChatting = {};
     }
     queueUpdateOperator(newState);
     return newState;
   }
   function logState() {
     console.log(`
-      queue: ${state.queue},
-      visitorChatting: ${state.visitorChatting},
+      queue: ${_.map(state.queue, (visitorObj) => _.get(visitorObj, 'id'))},
+      visitorChatting: ${_.get(state.visitorChatting, 'id')},
       operator: ${state.operator}
     `);
   }
 
 
-  socket.on('visitor-connected', () => {
+  socket.on('visitor-connected', (name) => {
     console.log(`a visitor connected with socket id:${socket.id}`);
     let newState = _.cloneDeep(state);
-    socket.emit('default-name', 'visitor');
-    newState.queue.push(socket.id);
-    if (!newState.visitorChatting) {
+    newState.queue.push({
+      id: socket.id,
+      name,
+    });
+    if (!newState.visitorChatting.id) {
       newState = addNextChatterToChat(newState);
     }
     state = newState;
@@ -97,12 +101,12 @@ io.on('connection', (socket) => {
     if (socket.id === newState.operator) {
       newState.operator = undefined;
       // what happens if he is chatting and disconnects?
-      io.to(newState.visitorChatting).emit('chatEnd'); // as if operator did !next
-    } else if (socket.id === newState.visitorChatting) {
+      io.to(newState.visitorChatting.id).emit('chatEnd'); // as if operator did !next
+    } else if (socket.id === newState.visitorChatting.id) {
       io.to(newState.operator).emit('chatEnd');
       newState = addNextChatterToChat(newState);
-    } else if (newState.queue.indexOf(socket.id) !== -1) {
-      newState.queue = _.reject(newState.queue, (val) => val === socket.id);
+    } else if (_.find(state.queue, isVisitor(socket.id))) {
+      newState.queue = _.reject(newState.queue, isVisitor(socket.id));
       queueUpdateOperator(newState);
       io.emit('queueUpdate'); // notify all users that the queue has changed
     }
@@ -116,14 +120,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message-to-visitor', (payload) => {
-    console.log(`message-to-visitor ${state.visitorChatting} ${payload.message}`);
-    socket.to(state.visitorChatting).emit('newMessage', payload);
+    console.log(`message-to-visitor ${state.visitorChatting.id} ${payload.message}`);
+    socket.to(state.visitorChatting.id).emit('newMessage', payload);
   });
   socket.on('closeThisChat', () => {
-    console.log(`close chat with ${state.visitorChatting}`);
+    console.log(`close chat with ${state.visitorChatting.id}`);
     let newState = _.cloneDeep(state);
     io.to(newState.operator).emit('chatEnd');
-    io.to(newState.visitorChatting).emit('chatEnd');
+    io.to(newState.visitorChatting.id).emit('chatEnd');
     newState = addNextChatterToChat(newState);
     state = newState;
   });
