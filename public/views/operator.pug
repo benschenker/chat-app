@@ -6,11 +6,13 @@ script(src="/scripts/lib/operator.js")
 script(src="/scripts/lib/directives/qcName.js")
 script(src="/scripts/lib/directives/qcChatbox.js")
 link(rel="stylesheet" href="/stylesheets/app.css")
+link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css")
 
-.main(ng-app="chat" ng-controller="operatorCtrl")
+
+body.main.container.text-center(ng-app="chat" ng-controller="operatorCtrl")
   qc-name
   .chat
-    span Queue
     .queue.list
+      span(ng-show="!queue.length") Queue is Empty
       div(ng-repeat="user in queue") {{user}}
     qc-chatbox(ng-show="chatting")

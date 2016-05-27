@@ -6,9 +6,9 @@ script(src="/scripts/lib/visitor.js")
 script(src="/scripts/lib/directives/qcName.js")
 script(src="/scripts/lib/directives/qcChatbox.js")
 link(rel="stylesheet" href="/stylesheets/app.css")
+link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css")
 
-
-.main(ng-app="chat" ng-controller="visitorCtrl")
+body.main.container.text-center(ng-app="chat" ng-controller="visitorCtrl")
   qc-name
   .chat(ng-show="!chatEnd")
     #queue(ng-show="queue")

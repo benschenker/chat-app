@@ -1,9 +1,13 @@
+.container {
+  margin-top: 20px;
+}
+
 .list {
-  border-style: solid;
-  border-width: thin;
-  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   overflow: scroll;
-  margin: 0 0 10px 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 .queue {
   height: 150px;
@@ -11,10 +15,6 @@
 
 #history {
   height: 250px;
-}
-
-input {
-  margin-left: 10px;
 }
 
 #history span.sender {
