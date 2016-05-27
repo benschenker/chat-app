@@ -4,6 +4,7 @@ const app = express();
 const server = require('http').Server(app);// eslint-disable-line new-cap
 const io = require('socket.io')(server);
 const _ = require('lodash');
+const helpers = require('./helpers.js').init(io);
 
 const publicPath = '../public';
 app.use(express.static(publicPath)); // serves static files from public dir
@@ -40,45 +41,6 @@ let state = {
   operator: undefined, // the socket id of the logged in operator
 };
 
-// Helper functions below which do not need access to the 'socket' variable
-
-// Returns a function that is used as a predicate to find a visitor with id 'id'
-function isVisitor(id) {
-  return (visitorObj) => visitorObj.id === id;
-}
-
-// Anytime the queue changes we update the operator with the new queue state
-function queueUpdateOperator(currentState) {
-  io.to(currentState.operator).emit('queueUpdateOperator', currentState.queue);
-}
-
-/* Grabs the next user from the queue and sets them as the visitorChatting
-Updates everyone that the queue has changed
-Sends the chatStart event to the operator and visitor so that they can start chatting
-*/
-function addNextChatterToChat(currentState) {
-  const newState = _.cloneDeep(currentState);
-  if (newState.queue.length && newState.operator) {
-    newState.visitorChatting = newState.queue.shift();
-    io.emit('queueUpdate'); // notify all users that the queue has changed
-    io.to(newState.operator).emit('chatStart', newState.visitorChatting);
-    io.to(newState.visitorChatting.id).emit('chatStart');
-  } else {
-    newState.visitorChatting = {};
-  }
-  queueUpdateOperator(newState);
-  return newState;
-}
-
-// Logging helper function
-function logState(currentState) {
-  console.log(`
-    queue: ${_.map(currentState.queue, (visitorObj) => _.get(visitorObj, 'id'))},
-    visitorChatting: ${_.get(currentState.visitorChatting, 'id')},
-    operator: ${currentState.operator}
-  `);
-}
-
 io.on('connection', (socket) => {
   console.log('a user connected');
 
@@ -88,7 +50,7 @@ io.on('connection', (socket) => {
   And they then ask for their new place
   */
   function sendQueuePlace(currentState) {
-    const place = _.findIndex(currentState.queue, isVisitor(socket.id)) + 1;
+    const place = _.findIndex(currentState.queue, helpers.isVisitor(socket.id)) + 1;
     socket.emit('queuePlace', place);
   }
 
@@ -100,11 +62,11 @@ io.on('connection', (socket) => {
       name,
     });
     if (!newState.visitorChatting.id) {
-      newState = addNextChatterToChat(newState);
+      newState = helpers.addNextChatterToChat(newState);
     }
     sendQueuePlace(newState); // Just updates the visitor who connected with their place
-    queueUpdateOperator(newState);
-    logState(newState);
+    helpers.queueUpdateOperator(newState);
+    helpers.logState(newState);
     state = newState;
   });
 
@@ -117,8 +79,8 @@ io.on('connection', (socket) => {
     console.log(`an operator connected with socket id:${socket.id}`);
     let newState = _.cloneDeep(state);
     newState.operator = socket.id;
-    newState = addNextChatterToChat(newState);
-    logState(newState);
+    newState = helpers.addNextChatterToChat(newState);
+    helpers.logState(newState);
     state = newState;
   });
 
@@ -131,13 +93,13 @@ io.on('connection', (socket) => {
       io.to(newState.visitorChatting.id).emit('chatEnd'); // as if operator did !next
     } else if (socket.id === newState.visitorChatting.id) { // Chatter disconnects
       io.to(newState.operator).emit('chatEnd');
-      newState = addNextChatterToChat(newState);
-    } else if (_.find(newState.queue, isVisitor(socket.id))) { // Queued visitor disconnects
-      newState.queue = _.reject(newState.queue, isVisitor(socket.id));
-      queueUpdateOperator(newState);
+      newState = helpers.addNextChatterToChat(newState);
+    } else if (_.find(newState.queue, helpers.isVisitor(socket.id))) { // Queued visitor disconnects
+      newState.queue = _.reject(newState.queue, helpers.isVisitor(socket.id));
+      helpers.queueUpdateOperator(newState);
       io.emit('queueUpdate'); // notify all users that the queue has changed
     }
-    logState(newState);
+    helpers.logState(newState);
     state = newState;
   });
 
@@ -156,7 +118,7 @@ io.on('connection', (socket) => {
     let newState = _.cloneDeep(state);
     io.to(newState.operator).emit('chatEnd');
     io.to(newState.visitorChatting.id).emit('chatEnd');
-    newState = addNextChatterToChat(newState);
+    newState = helpers.addNextChatterToChat(newState);
     state = newState;
   });
 
@@ -165,10 +127,10 @@ io.on('connection', (socket) => {
     if (socket.id === newState.visitorChatting.id) {
       newState.visitorChatting.name = name;
       io.to(newState.operator).emit('chatter-name-change', newState.visitorChatting);
-    } else if (_.find(newState.queue, isVisitor(socket.id))) {
-      const visitorIndex = _.findIndex(newState.queue, isVisitor(socket.id));
+    } else if (_.find(newState.queue, helpers.isVisitor(socket.id))) {
+      const visitorIndex = _.findIndex(newState.queue, helpers.isVisitor(socket.id));
       newState.queue[visitorIndex].name = name;
-      queueUpdateOperator(newState);
+      helpers.queueUpdateOperator(newState);
     }
     state = newState;
   });
