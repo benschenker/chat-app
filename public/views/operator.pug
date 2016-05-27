@@ -13,6 +13,6 @@ body.main.container.text-center(ng-app="chat" ng-controller="operatorCtrl")
   qc-name
   .chat
     .queue.list
-      span(ng-show="!queue.length") Queue is Empty
-      div(ng-repeat="user in queue") {{user}}
+      div.chat-item(ng-show="!queue.length") Queue is Empty
+      div.chat-item(ng-repeat="user in queue") {{user}}
     qc-chatbox(ng-show="chatting")

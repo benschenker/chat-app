@@ -1,7 +1,7 @@
 .chatbox
   #history.list
-    span Have a question? We'd love to help.
-    div(ng-repeat="chat in history")
+    div.chat-item Have a question? We'd love to help.
+    div.chat-item(ng-repeat="chat in history")
       span.sender {{chat.name}}: 
       span.message {{chat.message}}
   form(ng-submit="submitNewMessage()")
