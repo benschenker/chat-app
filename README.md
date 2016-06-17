@@ -49,9 +49,7 @@ The `/operator` endpoint is where the operator enters the site and makes himself
 
 #### Developer Setup
 
-1. `npm install`
-* `bower install`
-* `npm run build`
+* `npm install`
 
 #### Running the App
 
